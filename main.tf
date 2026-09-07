@@ -155,7 +155,7 @@ resource "aws_route" "database" {
 }
 
 
-/* resource "aws_route_table_association" "public" {
+resource "aws_route_table_association" "public" {
   count = length(var.public_subnet_cidr)
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
@@ -172,4 +172,4 @@ resource "aws_route_table_association" "database" {
   count = length(var.database_subnet_cidr)
   subnet_id      = aws_subnet.database[count.index].id
   route_table_id = aws_route_table.database.id
- */
+}
