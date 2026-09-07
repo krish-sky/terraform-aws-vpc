@@ -12,6 +12,7 @@ resource "aws_internet_gateway" "main" {
   tags = local.igw_final_tags
 }
 
+# public-subnet
 resource "aws_subnet" "public" {
   count = length(var.public_subnet_cidr)
   vpc_id     = aws_vpc.main.id
@@ -22,9 +23,84 @@ resource "aws_subnet" "public" {
   tags = merge(
     local.common_tags,
     {
-      Name = "{${var.project}-${var.environment}-project-${local.az_names[count.index]}"
+      Name = "${var.project}-${var.environment}-project-${local.az_names[count.index]}"
     },
 
     var.public_subnet_tags
+  )
+}
+
+# private-subnet
+resource "aws_subnet" "private" {
+  count = length(var.private_subnet_cidr)
+  vpc_id     = aws_vpc.main.id
+  cidr_block = var.private_subnet_cidr[count.index]
+  availability_zone = local.az_names[count.index]
+  
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.project}-${var.environment}-project-${local.az_names[count.index]}"
+    },
+
+    var.private_subnet_tags
+  )
+}
+
+
+# database-subnet
+resource "aws_subnet" "database" {
+  count = length(var.database_subnet_cidr)
+  vpc_id     = aws_vpc.main.id
+  cidr_block = var.database_subnet_cidr[count.index]
+  availability_zone = local.az_names[count.index]
+  
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.project}-${var.environment}-project-${local.az_names[count.index]}"
+    },
+
+    var.database_subnet_tags
+  )
+}
+
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.project}-${var.environment}-public"
+    },
+
+    var.public_route_table_tags
+  )
+}
+
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
+
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.project}-${var.environment}-private"
+    },
+
+    var.private_route_table_tags
+  )
+}
+
+
+resource "aws_route_table" "database" {
+  vpc_id = aws_vpc.main.id
+
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.project}-${var.environment}-database"
+    },
+
+    var.database_route_table_tags
   )
 }
